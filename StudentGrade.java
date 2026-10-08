@@ -1,245 +1,194 @@
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.DocumentFilter;
 
 public class StudentGrade extends JFrame {
 
     private JTextField nameField;
     private JTextField idField;
-
     private JTextField mathematicsField;
     private JTextField scienceField;
     private JTextField englishField;
     private JTextField javaField;
-
     private JTextArea resultArea;
 
     public StudentGrade() {
 
-        setTitle("Horizon TechX - Student Grade Tracker");
+        this.setTitle("Horizon TechX - Student Grade Tracker");
+        this.setSize(850, 700);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
 
-        setSize(850, 700);
-
-        setDefaultCloseOperation(
-                JFrame.EXIT_ON_CLOSE
-        );
-
-        setLocationRelativeTo(null);
-
-        createGUI();
+        this.createGUI();
     }
-
-    // =====================================================
-    // CREATE GUI
-    // =====================================================
 
     private void createGUI() {
 
-        JPanel mainPanel =
-                new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(new Color(245, 247, 250));
 
-        mainPanel.setBackground(
-                new Color(245, 247, 250)
+        // ================= HEADER =================
+
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBackground(new Color(35, 65, 100));
+        headerPanel.setBorder(
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
         );
 
-        // =================================================
-        // HEADER
-        // =================================================
+        JLabel titleLabel = new JLabel("STUDENT GRADE TRACKER");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel header =
-                new JPanel();
+        JLabel subtitleLabel = new JLabel(
+                "Horizon TechX | Academic Performance Management System"
+        );
+        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitleLabel.setForeground(Color.WHITE);
+        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        header.setLayout(
-                new BoxLayout(
-                        header,
-                        BoxLayout.Y_AXIS
-                )
+        headerPanel.add(titleLabel);
+        headerPanel.add(Box.createVerticalStrut(5));
+        headerPanel.add(subtitleLabel);
+
+        // ================= INPUT FIELDS =================
+
+        JPanel formPanel = new JPanel(
+                new GridLayout(6, 2, 12, 12)
         );
 
-        header.setBackground(
-                new Color(35, 65, 100)
+        formPanel.setBackground(new Color(245, 247, 250));
+
+        formPanel.setBorder(
+                BorderFactory.createEmptyBorder(20, 60, 10, 60)
         );
 
-        header.setBorder(
-                BorderFactory.createEmptyBorder(
-                        20, 20, 20, 20
-                )
-        );
+        // Student Name
+        JLabel nameLabel = new JLabel("Student Name:");
+        this.nameField = new JTextField();
 
-        JLabel title =
-                new JLabel(
-                        "STUDENT GRADE TRACKER"
-                );
+        // Prevent numbers and special characters in Student Name
+        ((AbstractDocument) this.nameField.getDocument())
+                .setDocumentFilter(new DocumentFilter() {
 
-        title.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        28
-                )
-        );
+                    @Override
+                    public void insertString(
+                            FilterBypass fb,
+                            int offset,
+                            String string,
+                            AttributeSet attr)
+                            throws javax.swing.text.BadLocationException {
 
-        title.setForeground(Color.WHITE);
+                        if (string != null && string.matches("[a-zA-Z ]+")) {
+                            fb.insertString(offset, string, attr);
+                        }
+                    }
 
-        title.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
+                    @Override
+                    public void replace(
+                            FilterBypass fb,
+                            int offset,
+                            int length,
+                            String text,
+                            AttributeSet attrs)
+                            throws javax.swing.text.BadLocationException {
 
-        JLabel subtitle =
-                new JLabel(
-                        "Horizon TechX | Academic Performance Management System"
-                );
+                        String currentText =
+                                fb.getDocument().getText(
+                                        0,
+                                        fb.getDocument().getLength()
+                                );
 
-        subtitle.setFont(
-                new Font(
-                        "Arial",
-                        Font.PLAIN,
-                        15
-                )
-        );
+                        String newText =
+                                currentText.substring(0, offset)
+                                + (text == null ? "" : text)
+                                + currentText.substring(offset + length);
 
-        subtitle.setForeground(Color.WHITE);
-
-        subtitle.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        header.add(title);
-
-        header.add(
-                Box.createVerticalStrut(5)
-        );
-
-        header.add(subtitle);
-
-        // =================================================
-        // INPUT PANEL
-        // =================================================
-
-        JPanel inputPanel =
-                new JPanel(
-                        new GridLayout(
-                                6,
-                                2,
-                                12,
-                                12
-                        )
-                );
-
-        inputPanel.setBackground(
-                new Color(245, 247, 250)
-        );
-
-        inputPanel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        20, 60, 10, 60
-                )
-        );
-
-        // Name
-        JLabel nameLabel =
-                new JLabel("Name:");
-
-        nameField =
-                new JTextField();
+                        if (newText.matches("[a-zA-Z ]*")) {
+                            fb.replace(offset, length, text, attrs);
+                        }
+                    }
+                });
 
         // Student ID
-        JLabel idLabel =
-                new JLabel("Student ID:");
-
-        idField =
-                new JTextField();
+        JLabel idLabel = new JLabel("Student ID:");
+        this.idField = new JTextField();
 
         // Mathematics
-        JLabel mathematicsLabel =
-                new JLabel("Mathematics (0-100):");
-
-        mathematicsField =
-                new JTextField();
+        JLabel mathematicsLabel = new JLabel("Mathematics:");
+        this.mathematicsField = new JTextField();
 
         // Science
-        JLabel scienceLabel =
-                new JLabel("Science (0-100):");
-
-        scienceField =
-                new JTextField();
+        JLabel scienceLabel = new JLabel("Science:");
+        this.scienceField = new JTextField();
 
         // English
-        JLabel englishLabel =
-                new JLabel("English (0-100):");
-
-        englishField =
-                new JTextField();
+        JLabel englishLabel = new JLabel("English:");
+        this.englishField = new JTextField();
 
         // Java
-        JLabel javaLabel =
-                new JLabel("Java (0-100):");
+        JLabel javaLabel = new JLabel("Java:");
+        this.javaField = new JTextField();
 
-        javaField =
-                new JTextField();
+        // Add fields
+        formPanel.add(nameLabel);
+        formPanel.add(this.nameField);
 
-        inputPanel.add(nameLabel);
-        inputPanel.add(nameField);
+        formPanel.add(idLabel);
+        formPanel.add(this.idField);
 
-        inputPanel.add(idLabel);
-        inputPanel.add(idField);
+        formPanel.add(mathematicsLabel);
+        formPanel.add(this.mathematicsField);
 
-        inputPanel.add(mathematicsLabel);
-        inputPanel.add(mathematicsField);
+        formPanel.add(scienceLabel);
+        formPanel.add(this.scienceField);
 
-        inputPanel.add(scienceLabel);
-        inputPanel.add(scienceField);
+        formPanel.add(englishLabel);
+        formPanel.add(this.englishField);
 
-        inputPanel.add(englishLabel);
-        inputPanel.add(englishField);
+        formPanel.add(javaLabel);
+        formPanel.add(this.javaField);
 
-        inputPanel.add(javaLabel);
-        inputPanel.add(javaField);
+        // ================= BUTTONS =================
 
-        // =================================================
-        // BUTTON PANEL
-        // =================================================
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(245, 247, 250));
 
-        JPanel buttonPanel =
-                new JPanel();
-
-        buttonPanel.setBackground(
-                new Color(245, 247, 250)
-        );
-
-        JButton calculateButton =
-                new JButton(
-                        "Calculate Grade"
-                );
-
-        JButton clearButton =
-                new JButton("Clear");
-
-        JButton exitButton =
-                new JButton("Exit");
+        JButton calculateButton = new JButton("Calculate Grade");
+        JButton clearButton = new JButton("Clear");
+        JButton exitButton = new JButton("Exit");
 
         calculateButton.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        14
-                )
+                new Font("Arial", Font.BOLD, 14)
         );
 
         clearButton.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        14
-                )
+                new Font("Arial", Font.BOLD, 14)
         );
 
         exitButton.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        14
-                )
+                new Font("Arial", Font.BOLD, 14)
         );
 
         calculateButton.setFocusPainted(false);
@@ -250,97 +199,70 @@ public class StudentGrade extends JFrame {
         buttonPanel.add(clearButton);
         buttonPanel.add(exitButton);
 
-        // =================================================
-        // RESULT AREA
-        // =================================================
+        // ================= RESULT AREA =================
 
-        resultArea =
-                new JTextArea();
+        this.resultArea = new JTextArea();
 
-        resultArea.setEditable(false);
+        this.resultArea.setEditable(false);
 
-        resultArea.setFont(
-                new Font(
-                        "Monospaced",
-                        Font.PLAIN,
-                        14
-                )
+        this.resultArea.setFont(
+                new Font("Monospaced", Font.PLAIN, 14)
         );
 
-        resultArea.setLineWrap(true);
+        this.resultArea.setLineWrap(true);
+        this.resultArea.setWrapStyleWord(true);
 
-        resultArea.setWrapStyleWord(true);
-
-        resultArea.setText(
+        this.resultArea.setText(
                 "                  RESULT SUMMARY\n"
                 + "====================================================\n"
                 + "Enter student details and marks, then click\n"
                 + "'Calculate Grade' to generate the report."
         );
 
-        JScrollPane resultScrollPane =
-                new JScrollPane(resultArea);
+        JScrollPane scrollPane =
+                new JScrollPane(this.resultArea);
 
-        resultScrollPane.setBorder(
+        scrollPane.setBorder(
                 BorderFactory.createTitledBorder(
                         "Detailed Summary Report"
                 )
         );
 
-        resultScrollPane.setPreferredSize(
+        scrollPane.setPreferredSize(
                 new Dimension(700, 260)
         );
 
-        // =================================================
-        // CENTER PANEL
-        // =================================================
+        // ================= CENTER PANEL =================
 
         JPanel centerPanel =
-                new JPanel(
-                        new BorderLayout()
-                );
+                new JPanel(new BorderLayout());
 
         centerPanel.setBackground(
                 new Color(245, 247, 250)
         );
 
-        centerPanel.add(
-                inputPanel,
-                BorderLayout.NORTH
-        );
+        centerPanel.add(formPanel, BorderLayout.NORTH);
+        centerPanel.add(buttonPanel, BorderLayout.CENTER);
+        centerPanel.add(scrollPane, BorderLayout.SOUTH);
 
-        centerPanel.add(
-                buttonPanel,
-                BorderLayout.CENTER
-        );
-
-        centerPanel.add(
-                resultScrollPane,
-                BorderLayout.SOUTH
-        );
-
-        // =================================================
-        // BUTTON ACTIONS
-        // =================================================
+        // ================= BUTTON ACTIONS =================
 
         calculateButton.addActionListener(
-                e -> calculateGrade()
+                e -> this.calculateGrade()
         );
 
         clearButton.addActionListener(
-                e -> clearFields()
+                e -> this.clearFields()
         );
 
         exitButton.addActionListener(
-                e -> exitApplication()
+                e -> this.exitApplication()
         );
 
-        // =================================================
-        // ADD PANELS
-        // =================================================
+        // ================= MAIN PANEL =================
 
         mainPanel.add(
-                header,
+                headerPanel,
                 BorderLayout.NORTH
         );
 
@@ -349,7 +271,7 @@ public class StudentGrade extends JFrame {
                 BorderLayout.CENTER
         );
 
-        add(mainPanel);
+        this.add(mainPanel);
     }
 
     // =====================================================
@@ -358,64 +280,42 @@ public class StudentGrade extends JFrame {
 
     private void calculateGrade() {
 
-        String name =
-                nameField.getText().trim();
+        String name = this.nameField.getText().trim();
+        String studentId = this.idField.getText().trim();
 
-        String id =
-                idField.getText().trim();
-
-        // =================================================
-        // NAME VALIDATION
-        // =================================================
-
+        // Check Student Name
         if (name.isEmpty()) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Please enter your name.",
-                    "Missing Name",
+                    "Please enter Student Name.",
+                    "Missing Information",
                     JOptionPane.WARNING_MESSAGE
             );
 
             return;
         }
 
-        // Name can contain letters and spaces only
+        // Extra validation for Student Name
         if (!name.matches("[a-zA-Z ]+")) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Name should contain only letters and spaces.",
+                    "Student Name should contain only letters and spaces.",
                     "Invalid Name",
-                    JOptionPane.WARNING_MESSAGE
+                    JOptionPane.ERROR_MESSAGE
             );
 
             return;
         }
 
-        // =================================================
-        // STUDENT ID VALIDATION
-        // =================================================
-
-        if (id.isEmpty()) {
+        // Check Student ID
+        if (studentId.isEmpty()) {
 
             JOptionPane.showMessageDialog(
                     this,
                     "Please enter Student ID.",
-                    "Missing Student ID",
-                    JOptionPane.WARNING_MESSAGE
-            );
-
-            return;
-        }
-
-        // Exactly 10 digits
-        if (!id.matches("\\d{10}")) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Student ID must contain exactly 10 digits.",
-                    "Invalid Student ID",
+                    "Missing Information",
                     JOptionPane.WARNING_MESSAGE
             );
 
@@ -424,61 +324,52 @@ public class StudentGrade extends JFrame {
 
         try {
 
-            // =================================================
-            // READ MARKS
-            // =================================================
-
+            // Read marks
             double mathematics =
                     Double.parseDouble(
-                            mathematicsField
+                            this.mathematicsField
                                     .getText()
                                     .trim()
                     );
 
             double science =
                     Double.parseDouble(
-                            scienceField
+                            this.scienceField
                                     .getText()
                                     .trim()
                     );
 
             double english =
                     Double.parseDouble(
-                            englishField
+                            this.englishField
                                     .getText()
                                     .trim()
                     );
 
             double java =
                     Double.parseDouble(
-                            javaField
+                            this.javaField
                                     .getText()
                                     .trim()
                     );
 
-            // =================================================
-            // MARKS VALIDATION
-            // =================================================
-
-            if (!validMarks(mathematics) ||
-                    !validMarks(science) ||
-                    !validMarks(english) ||
-                    !validMarks(java)) {
+            // Validate marks
+            if (!this.validMarks(mathematics)
+                    || !this.validMarks(science)
+                    || !this.validMarks(english)
+                    || !this.validMarks(java)) {
 
                 JOptionPane.showMessageDialog(
                         this,
                         "Each mark must be between 0 and 100.",
                         "Invalid Marks",
-                        JOptionPane.WARNING_MESSAGE
+                        JOptionPane.ERROR_MESSAGE
                 );
 
                 return;
             }
 
-            // =================================================
-            // SUBJECT ARRAYLIST
-            // =================================================
-
+            // Subjects
             ArrayList<String> subjects =
                     new ArrayList<>();
 
@@ -487,10 +378,7 @@ public class StudentGrade extends JFrame {
             subjects.add("English");
             subjects.add("Java");
 
-            // =================================================
-            // MARKS ARRAYLIST
-            // =================================================
-
+            // Marks
             ArrayList<Double> marks =
                     new ArrayList<>();
 
@@ -499,32 +387,26 @@ public class StudentGrade extends JFrame {
             marks.add(english);
             marks.add(java);
 
-            // =================================================
-            // CREATE STUDENT OBJECT
-            // =================================================
-
+            // Create Student object
             Student student =
                     new Student(
                             name,
-                            id,
+                            studentId,
                             subjects,
                             marks
                     );
 
-            // =================================================
-            // CALCULATE RESULTS
-            // =================================================
-
-            double total =
+            // Get results
+            double totalMarks =
                     student.getTotalMarks();
 
             double average =
                     student.getAverage();
 
-            double highest =
+            double highestScore =
                     student.getHighestScore();
 
-            double lowest =
+            double lowestScore =
                     student.getLowestScore();
 
             String grade =
@@ -533,9 +415,7 @@ public class StudentGrade extends JFrame {
             String performance =
                     student.getPerformanceMessage();
 
-            // =================================================
-            // BUILD REPORT
-            // =================================================
+            // ================= REPORT =================
 
             StringBuilder report =
                     new StringBuilder();
@@ -552,34 +432,21 @@ public class StudentGrade extends JFrame {
                     "====================================================\n\n"
             );
 
-            report.append(
-                    "Name         : "
-            );
-
-            report.append(
-                    student.getName()
-            );
-
+            report.append("Student Name : ");
+            report.append(student.getName());
             report.append("\n");
 
-            report.append(
-                    "Student ID   : "
-            );
-
-            report.append(
-                    student.getStudentId()
-            );
-
+            report.append("Student ID   : ");
+            report.append(student.getStudentId());
             report.append("\n\n");
 
             report.append(
                     "---------------- SUBJECT MARKS ----------------\n"
             );
 
-            // Display subject marks
             for (int i = 0;
-                 i < subjects.size();
-                 i++) {
+                    i < subjects.size();
+                    i++) {
 
                 report.append(
                         String.format(
@@ -597,7 +464,7 @@ public class StudentGrade extends JFrame {
             report.append(
                     String.format(
                             "Total Marks  : %.2f / 400%n",
-                            total
+                            totalMarks
                     )
             );
 
@@ -611,35 +478,23 @@ public class StudentGrade extends JFrame {
             report.append(
                     String.format(
                             "Highest Score: %.2f%n",
-                            highest
+                            highestScore
                     )
             );
 
             report.append(
                     String.format(
                             "Lowest Score : %.2f%n",
-                            lowest
+                            lowestScore
                     )
             );
 
-            report.append(
-                    "Grade        : "
-            );
-
-            report.append(
-                    grade
-            );
-
+            report.append("Grade        : ");
+            report.append(grade);
             report.append("\n");
 
-            report.append(
-                    "Performance  : "
-            );
-
-            report.append(
-                    performance
-            );
-
+            report.append("Performance  : ");
+            report.append(performance);
             report.append("\n\n");
 
             report.append(
@@ -654,11 +509,8 @@ public class StudentGrade extends JFrame {
                     "===================================================="
             );
 
-            // =================================================
-            // SHOW REPORT
-            // =================================================
-
-            resultArea.setText(
+            // Display report
+            this.resultArea.setText(
                     report.toString()
             );
 
@@ -681,29 +533,28 @@ public class StudentGrade extends JFrame {
     }
 
     // =====================================================
-    // MARK VALIDATION
+    // VALIDATE MARKS
     // =====================================================
 
-    private boolean validMarks(double marks) {
+    private boolean validMarks(double mark) {
 
-        return marks >= 0 && marks <= 100;
+        return mark >= 0 && mark <= 100;
     }
 
     // =====================================================
-    // CLEAR BUTTON
+    // CLEAR
     // =====================================================
 
     private void clearFields() {
 
-        nameField.setText("");
-        idField.setText("");
+        this.nameField.setText("");
+        this.idField.setText("");
+        this.mathematicsField.setText("");
+        this.scienceField.setText("");
+        this.englishField.setText("");
+        this.javaField.setText("");
 
-        mathematicsField.setText("");
-        scienceField.setText("");
-        englishField.setText("");
-        javaField.setText("");
-
-        resultArea.setText(
+        this.resultArea.setText(
                 "                  RESULT SUMMARY\n"
                 + "====================================================\n"
                 + "Enter student details and marks, then click\n"
@@ -712,12 +563,12 @@ public class StudentGrade extends JFrame {
     }
 
     // =====================================================
-    // EXIT BUTTON
+    // EXIT
     // =====================================================
 
     private void exitApplication() {
 
-        int answer =
+        int choice =
                 JOptionPane.showConfirmDialog(
                         this,
                         "Are you sure you want to exit?",
@@ -725,27 +576,24 @@ public class StudentGrade extends JFrame {
                         JOptionPane.YES_NO_OPTION
                 );
 
-        if (answer ==
-                JOptionPane.YES_OPTION) {
+        if (choice == JOptionPane.YES_OPTION) {
 
             System.exit(0);
         }
     }
 
     // =====================================================
-    // MAIN METHOD
+    // MAIN
     // =====================================================
 
     public static void main(String[] args) {
 
-        SwingUtilities.invokeLater(
-                () -> {
+        SwingUtilities.invokeLater(() -> {
 
-                    StudentGrade app =
-                            new StudentGrade();
+            StudentGrade application =
+                    new StudentGrade();
 
-                    app.setVisible(true);
-                }
-        );
+            application.setVisible(true);
+        });
     }
 }
